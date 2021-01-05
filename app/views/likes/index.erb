@@ -1,0 +1,58 @@
+<section>
+    <%=attachment_image_tag @user, :profle_image,size:"100x100", fallback: "no_image.png"%>
+    <p>name</p>
+    <p><%=@user.name%></p>
+    <p>メールアドレス</p>
+    <p><%=@user.email%></p>
+    <p>サイト数</p>
+    <p><%=@user.sites.count%></p>
+    <p>お気に入り数</p>
+    <p><%=@user.likes.count%></p>
+</section>
+<h1>人気のURL</h1>
+<table>
+    <thead>
+        <tr>
+        	<th>お気に入り</th>
+        	<th>お気に入りの数</th>
+            <th>サイト名</th>
+            <th>URL</th>
+            <th colspan="2"></th>
+        </tr>
+    </thead>
+    <% @likes.each do |like|%>
+   <% site = Site.find_by(id: like.site_id)%>
+        <tbody>
+            <tr>
+            	 <td>
+                    <% if site.liked_by?(current_user)%>
+                    <%=link_to "❤", site_likes_path(site), method: :delete %>
+                    <%else%>
+                    <%=link_to "♡", site_likes_path(site), method: :post%>
+                    <%end%>
+                </td>
+                <td>
+                    <p><%=site.likes.count%></p>
+                </td>
+                <td>
+                    <p><%=site.site_name%></p>
+                </td>
+                <td>
+                    <p><%= raw Rinku.auto_link(site.site_url, :all, 'target="_blank"')%></p>
+                </td>
+                <td>
+                    <p><%=site.discription%></p>
+                </td>
+                <% if user_signed_in? %>
+	                <td>
+	                    <%=link_to "edit", edit_site_path(site.id)%>
+	                </td>
+	                <td>
+	                    <%=link_to "destroy", site_path(site.id),"data-confirm" => "本当に削除しますか？", method: :delete %>
+	                </td>
+	            <% end %>
+            </tr>
+        </tbody>
+
+    <% end %>
+</table>
